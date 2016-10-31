@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿/*
+ LMSC-281 Midterm examples built onto the 2D UFO Unity Tutorial project
+ Fall 2016 - Jeanine Cowen
+ */
+
+using UnityEngine;
 using System.Collections;
 
 //JC need to add the SceneManagement library to be able to restart the level
@@ -152,7 +157,7 @@ public class PlayerController_w_Array_HighScores : MonoBehaviour {
 		if (restart) {
 			if (GUI.Button(new Rect(10, 70, 500, 30), lostGame)) {
 				restart = false;
-				SceneManager.LoadScene ("Main_Single_HighScore");
+				SceneManager.LoadScene ("Main_Ten_HighScores");
 			}
 		}
 	}
