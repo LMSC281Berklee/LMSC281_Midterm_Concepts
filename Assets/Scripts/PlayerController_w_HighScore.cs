@@ -1,6 +1,6 @@
 ﻿/*
  LMSC-281 Midterm examples built onto the 2D UFO Unity Tutorial project
- Fall 2016 - Jeanine Cowen
+ Fall 2017 - Jeanine Cowen
  */
 
 using UnityEngine;
@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 //Adding this allows us to access members of the UI namespace including Text.
 using UnityEngine.UI;
 
-public class PlayerController_w_Array_HighScores : MonoBehaviour {
+public class PlayerController_w_HighScore : MonoBehaviour {
 
 	//JC - existing float for midterm requirement
 	public float speed;				//Floating point variable to store the player's movement speed.
@@ -29,11 +29,8 @@ public class PlayerController_w_Array_HighScores : MonoBehaviour {
 	public int highScore = 0;
 	string highScoreKey = "HighScore";
 
-	//JC since we want to capture a highscores table, we will need an array to do that
-	int[] highScores = new int[10];
-
 	//JC need to have a string variable for the midterm requirements
-	string lostGame = "Sorry, you lost! Play Again?";
+	string lostGame = "Play Again?";
 
 	//JC need to have a boolean variable for the midterm requirements
 	bool restart = false;
@@ -53,16 +50,13 @@ public class PlayerController_w_Array_HighScores : MonoBehaviour {
 		//Call our SetCountText function which will update the text with the current value for count.
 		SetCountText ();
 
-		//JC - from the Unity_Tutorial_Roller_Ball playprefs player controller script
-		//Load the highScores array from player prefs if it is there, 0 otherwise.
-		//use this for a leaderboard style where you save several highscores
-		for (int i = 0; i<highScores.Length; i++){
+		//JC quick reset of the highscore... for testing
+//		PlayerPrefs.SetInt(highScoreKey, 0);
 
-			//Get the highScore from 1 - length of highScores array length
-			highScoreKey = "HighScore"+(i+1).ToString();
-			highScore = PlayerPrefs.GetInt(highScoreKey,0);
-			Debug.Log (highScoreKey + " is " + highScore);
-		}
+		//JC - from the Unity_Tutorial_Roller_Ball playprefs player controller script
+		//Get the highScore from player prefs if it is there, 0 otherwise.
+		highScore = PlayerPrefs.GetInt(highScoreKey,0); 
+		Debug.Log ("HighScore is currently: " + highScore);
 	}
 
 	//FixedUpdate is called at a fixed interval and is independent of frame rate. Put physics code here.
@@ -124,24 +118,9 @@ public class PlayerController_w_Array_HighScores : MonoBehaviour {
 	//JC - This function handles the high scores and can be used when we win and when we lose
 	void HighScoreProcess () {
 		Debug.Log ("highscore here");
-
-		//use this for a leaderboard style where you save several highscores
-		for (int i = 0; i<highScores.Length; i++){
-
-			//Get the highScore from 1 - length of highScores array length
-			highScoreKey = "HighScore"+(i+1).ToString();
-			highScore = PlayerPrefs.GetInt(highScoreKey,0);
-
-			//if score is greater, store previous highScore Set a new highScore
-			//set score to previous highScore, and try again
-			//Once score is greater, it will always be for the
-			//remaining list, so the top will always be 
-			//updated
-			if(count>highScore){
-				int temp = highScore;
-				PlayerPrefs.SetInt(highScoreKey,count);
-				count = temp;
-			}
+		if (count > highScore) {
+			PlayerPrefs.SetInt(highScoreKey, count);
+			PlayerPrefs.Save();
 		}
 	}
 
@@ -157,7 +136,7 @@ public class PlayerController_w_Array_HighScores : MonoBehaviour {
 		if (restart) {
 			if (GUI.Button(new Rect(10, 70, 500, 30), lostGame)) {
 				restart = false;
-				SceneManager.LoadScene ("Main_Ten_HighScores");
+				SceneManager.LoadScene ("Main_Single_HighScore");
 			}
 		}
 	}

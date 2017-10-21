@@ -1,7 +1,8 @@
 ﻿/*
  LMSC-281 Midterm examples built onto the 2D UFO Unity Tutorial project
- Fall 2016 - Jeanine Cowen
+ Fall 2017 - Jeanine Cowen
  */
+
 
 using UnityEngine;
 using System.Collections;
@@ -12,7 +13,7 @@ using UnityEngine.SceneManagement;
 //Adding this allows us to access members of the UI namespace including Text.
 using UnityEngine.UI;
 
-public class PlayerController_w_HighScore : MonoBehaviour {
+public class PlayerController_w_HighScore_Username : MonoBehaviour {
 
 	//JC - existing float for midterm requirement
 	public float speed;				//Floating point variable to store the player's movement speed.
@@ -29,11 +30,18 @@ public class PlayerController_w_HighScore : MonoBehaviour {
 	public int highScore = 0;
 	string highScoreKey = "HighScore";
 
+	//JC - we want to capture the Username
+	public string userName;
+	string userNameKey = "UserName";
+
 	//JC need to have a string variable for the midterm requirements
-	string lostGame = "Sorry, you lost! Play Again?";
+	string lostGame = "Play Again?";
 
 	//JC need to have a boolean variable for the midterm requirements
 	bool restart = false;
+
+	//JC using a boolean to know when to grab the username
+	bool isHighScore = false;
 
 	// Use this for initialization
 	void Start()
@@ -50,10 +58,15 @@ public class PlayerController_w_HighScore : MonoBehaviour {
 		//Call our SetCountText function which will update the text with the current value for count.
 		SetCountText ();
 
+		//JC quick reset of the highscore... for testing
+//		PlayerPrefs.SetInt(highScoreKey, 0);
+//		PlayerPrefs.SetString (userNameKey, "");
+
 		//JC - from the Unity_Tutorial_Roller_Ball playprefs player controller script
-		//Get the highScore from player prefs if it is there, 0 otherwise.
-		highScore = PlayerPrefs.GetInt(highScoreKey,0); 
-		Debug.Log ("HighScore is currently: " + highScore);
+		//Get the highScore and username from player prefs if it is there, 0 and blank if they don't exist
+		highScore = PlayerPrefs.GetInt(highScoreKey,0);
+		userName = PlayerPrefs.GetString(userNameKey, "");
+		Debug.Log ("HighScore is currently: " + highScore + " by " + userName);
 	}
 
 	//FixedUpdate is called at a fixed interval and is independent of frame rate. Put physics code here.
@@ -116,6 +129,7 @@ public class PlayerController_w_HighScore : MonoBehaviour {
 	void HighScoreProcess () {
 		Debug.Log ("highscore here");
 		if (count > highScore) {
+			isHighScore = true;
 			PlayerPrefs.SetInt(highScoreKey, count);
 			PlayerPrefs.Save();
 		}
@@ -126,14 +140,26 @@ public class PlayerController_w_HighScore : MonoBehaviour {
 		Debug.Log ("Lost the game");
 		HighScoreProcess();
 		restart = true;
+		Time.timeScale = 0.0f;
 	}
 
 	//JC - we can use OnGUI to ask player to restart the game
 	void OnGUI () {
-		if (restart) {
+		if (isHighScore) {
+			GUI.Box (new Rect(10, 70, 500, 30), "That's a New High Score! Enter your Username!");
+			userName = GUI.TextField(new Rect(50, 130, 300, 30), userName, 50);
+			if (GUI.Button (new Rect(10, 170, 500, 30), "Submit")) {
+				PlayerPrefs.SetString(userNameKey, userName);
+				restart = true;
+				isHighScore = false;
+			}
+
+		}		
+		else if (restart) {
 			if (GUI.Button(new Rect(10, 70, 500, 30), lostGame)) {
 				restart = false;
-				SceneManager.LoadScene ("Main_Single_HighScore");
+				Time.timeScale = 1.0f;
+				SceneManager.LoadScene ("Main_Single_HighScore_and_Username");
 			}
 		}
 	}
